@@ -1,0 +1,7 @@
+{
+  "id": "link-removing-sidebar",
+  "name": "New Motion - Remove entity's references",
+  "srcdoc": "./dist/index.html",
+  "sidebar": true,
+  "parameters": { }
+}
