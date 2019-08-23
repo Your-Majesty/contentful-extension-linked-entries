@@ -58,7 +58,11 @@ export class SidebarExtension extends React.Component {
   }
 }
 
-export const initialize = sdk => {
+const printE = entity => {
+  console.log(JSON.stringify(entity, null, ' '))
+};
+
+export const initialize = async sdk => {
   if (sdk.location.is(locations.LOCATION_DIALOG)) {
     ReactDOM.render(<DialogExtension sdk={sdk} />, document.getElementById('root'));
   } else if (sdk.location.is(locations.LOCATION_ENTRY_SIDEBAR)) {
@@ -66,11 +70,20 @@ export const initialize = sdk => {
   }
   const sys = sdk.entry.getSys();
   const id = sys.id;
-  sdk.space.getEntries({
+  const entries = await sdk.space.getEntries({
     'links_to_entry': id
-  }).then(entries => {
-    console.log(JSON.stringify(entries.items, null, ' '));
-  }).catch(console.error)
+  });
+  const targetId = entries.items[0].sys.id;
+  console.log("target id " + targetId);
+  let hello = await sdk.space.getEntry(targetId);
+  hello.fields.title['en-US'] = 'Hello Contentful';
+
+  try {
+    const _ = await sdk.space.updateEntry(hello);
+    console.log(`entity ${_.sys.id} updated`);
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 init(initialize);
