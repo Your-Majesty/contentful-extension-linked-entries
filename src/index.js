@@ -61,9 +61,16 @@ export class SidebarExtension extends React.Component {
 export const initialize = sdk => {
   if (sdk.location.is(locations.LOCATION_DIALOG)) {
     ReactDOM.render(<DialogExtension sdk={sdk} />, document.getElementById('root'));
-  } else {
+  } else if (sdk.location.is(locations.LOCATION_ENTRY_SIDEBAR)) {
     ReactDOM.render(<SidebarExtension sdk={sdk} />, document.getElementById('root'));
   }
+  const sys = sdk.entry.getSys();
+  const id = sys.id;
+  sdk.space.getEntries({
+    'links_to_entry': id
+  }).then(entries => {
+    console.log(JSON.stringify(entries.items, null, ' '));
+  }).catch(console.error)
 };
 
 init(initialize);
