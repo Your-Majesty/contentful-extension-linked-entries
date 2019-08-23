@@ -1,7 +1,6 @@
 {
-  "id": "link-removing-sidebar",
-  "name": "New Motion - Remove entity's references",
-  "srcdoc": "./dist/index.html",
-  "sidebar": true,
-  "parameters": { }
+  "id": "contentful-extension-unlinks",
+  "name": "Unlinks",
+  "srcdoc": "./build/index.html",
+  "sidebar": true
 }
