@@ -33,7 +33,7 @@ const omit = (obj, predicate) => {
 const getDisplayed = _.memoize(async (sdk, contentTypeId) => {
   const content = await sdk.space.getContentType(contentTypeId);
   return content.displayField;
-}, (...args) => _.values(args).join("_"));
+}, (...args) => JSON.stringify(args));
 
 const getTitle = (fields, display, locale) => {
   return _.get(fields, `${display}[${locale}]`, _.find(fields[display]) || 'Untitled')
