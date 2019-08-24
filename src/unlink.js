@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-const printE = entity => {
+export const printE = entity => {
   console.log(JSON.stringify(entity, null, ' '))
 };
 
@@ -35,15 +35,21 @@ const getDisplayed = _.memoize(async (sdk, contentTypeId) => {
   return content.displayField;
 }, (...args) => JSON.stringify(args));
 
-const getTitle = (fields, display, locale) => {
+const selectTitle = (fields, display, locale) => {
   return _.get(fields, `${display}[${locale}]`, _.find(fields[display]) || 'Untitled')
+};
+
+export const getTitle = async (sdk, entity) => {
+  const display = await getDisplayed(sdk, entity.sys.contentType.sys.id);
+  const x = selectTitle(entity.fields, display, sdk.locales.default);
+  console.log(x);
+  return x;
 };
 
 const printReferences = (sdk, entries) => {
   console.info('There is entries that links to this entry:');
-  _.forEach(entries, async e => {
-    const display = await getDisplayed(sdk, e.sys.contentType.sys.id);
-    console.info(getTitle(e.fields, display, sdk.locales.default));
+  _.forEach(entries, async entity => {
+    await getTitle(sdk, entity);
   });
 };
 
@@ -58,7 +64,17 @@ const start = async (sdk, entries) => {
   // await updateEntry(sdk, omit(first, e => isEqLink(e, id)));
 };
 
-export const unlink = async (sdk) => {
+export const getLinkedEntries = async sdk => {
+  const entries = await sdk.space.getEntries({
+    'links_to_entry': sdk.entry.getSys().id
+  });
+
+  console.log(_.isArray(entries.items));
+  //return _.isArray(entries.items) ? entries.items : [entries.items];
+  return entries.items;
+};
+
+export const unlink = async sdk => {
   const entries = await sdk.space.getEntries({
     'links_to_entry': sdk.entry.getSys().id
   });
