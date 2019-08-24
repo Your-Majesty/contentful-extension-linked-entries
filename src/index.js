@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
-import { Button, List, ListItem, TextLink } from '@contentful/forma-36-react-components';
+import { Tooltip, Button, List, ListItem, TextLink, Paragraph, Typography, IconButton } from '@contentful/forma-36-react-components';
 import { init, locations } from 'contentful-ui-extensions-sdk';
 import tokens from '@contentful/forma-36-tokens';
 import '@contentful/forma-36-react-components/dist/styles.css';
@@ -39,8 +39,11 @@ export class ReferenceListItem extends React.Component{
     title: PropTypes.string.isRequired
   };
 
+  /* TODO better way to extract base url */
+  baseUrl = 'https://app.contentful.com';
+
   getHref() {
-    return `https://app.contentful.com/spaces/${this.props.space}/entries/${this.props.entry}`
+    return `${this.baseUrl}/spaces/${this.props.space}/entries/${this.props.entry}`
   }
 
   onButtonClick = async () => {
@@ -53,21 +56,27 @@ export class ReferenceListItem extends React.Component{
 
   render() {
     return (
-      <ListItem>
+      <ListItem className="incoming-links__item">
         <TextLink
             linkType="primary"
             href={this.getHref()}
+            className="no-underline incoming-links__link"
+            target="_blank"
         >
           {this.props.title}
         </TextLink>
-        <Button
+        <Tooltip content="unlink" place="right">
+          <IconButton
             buttonType="negative"
             onClick={this.onButtonClick}
             isFullWidth={false}
             testId="open-dialog"
-        >
-          X
-        </Button>
+            className="btn-close"
+            iconProps={{ icon: 'Close', /* size: 'large' */ }}
+            label="unlink"
+
+          />
+        </Tooltip>
       </ListItem>
     )
   }
@@ -95,7 +104,7 @@ export class ReferenceLinkList extends React.Component {
 
   render() {
     return (
-      <List>
+      <List className="incoming-links__list">
         {this.state.entries.map((item, key)  =>  (
            <ReferenceListItem key={item.id} sdk={this.props.sdk} entry={item.id} space={item.space} title={item.title}/>
           ))}
@@ -130,13 +139,15 @@ export class SidebarExtension extends React.Component {
 
   render() {
     if (_.isEmpty(this.state.entities)) {
-      return <p>No other entries link to this entry.</p>;
+      return (
+        <Paragraph className="incoming-links__message">No other entries link to this entry.</Paragraph>
+      );
     } else {
       return (
-        <div>
-          <p>There is entries that links to this entry:</p>
+        <Typography className="entity-sidebar__incoming-links">
+          <Paragraph className="incoming-links__message">There are other entries that links to this entry:</Paragraph>
           <ReferenceLinkList sdk={this.props.sdk} entries={this.state.entities}/>
-        </div>
+        </Typography>
       );
     }
   }

@@ -4,7 +4,82 @@ div {
   margin: 0;
   padding: 0;
   border: 0;
-  font-size: 100%;
   font: inherit;
   vertical-align: baseline;
+}
+
+a.no-underline:link {
+  text-decoration: none;
+}
+
+.btn-close {
+  margin-left: 7px;
+  padding-bottom: 1px;
+  vertical-align: middle;
+}
+
+a {
+  color: #1683d0;
+  text-decoration: none;
+}
+
+a:link {
+  color: #1683d0;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #0c2c52;
+}
+
+li {
+  list-style-type: none;
+  margin-bottom: 5px;
+}
+
+ul, ol {
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  display: block;
+  list-style-type: disc;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 40px;
+}
+
+li {
+  list-style-type: none;
+  margin-bottom: 5px;
+}
+
+.incoming-links__list {
+  max-height: 143px;
+  overflow-y: auto;
+}
+
+.entity-sidebar__incoming-links {
+  color: #8091a5;
+}
+
+.incoming-links__item {
+  margin-left: 20px;
+  list-style-type: disc;
+}
+
+.incoming-links__message {
+  margin-bottom: 5px;
+}
+
+html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp, small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary, time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+  background: transparent;
 }
