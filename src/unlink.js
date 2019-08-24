@@ -30,14 +30,10 @@ const omit = (obj, predicate) => {
   });
 };
 
-const underscore = (...args) => _.values(args).join("_");
-
-const _getDisplayed = async (sdk, contentTypeId) => {
+const getDisplayed = _.memoize(async (sdk, contentTypeId) => {
   const content = await sdk.space.getContentType(contentTypeId);
   return content.displayField;
-};
-
-const getDisplayed = _.memoize(_getDisplayed, underscore);
+}, (...args) => _.values(args).join("_"));
 
 const getTitle = (fields, display, locale) => {
   return _.get(fields, `${display}[${locale}]`, _.find(fields[display]) || 'Untitled')
