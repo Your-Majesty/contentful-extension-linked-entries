@@ -65,8 +65,7 @@ export class ReferenceListItem extends React.Component{
         >
           {this.props.title}
         </TextLink>
-        <Tooltip content="unlink" place="right">
-          <IconButton
+        <IconButton
             buttonType="negative"
             onClick={this.onButtonClick}
             isFullWidth={false}
@@ -75,8 +74,7 @@ export class ReferenceListItem extends React.Component{
             iconProps={{ icon: 'Close', /* size: 'large' */ }}
             label="unlink"
 
-          />
-        </Tooltip>
+        />
       </ListItem>
     )
   }
