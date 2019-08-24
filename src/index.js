@@ -68,7 +68,6 @@ export class ReferenceListItem extends React.Component{
         <IconButton
             buttonType="negative"
             onClick={this.onButtonClick}
-            isFullWidth={false}
             testId="open-dialog"
             className="btn-close"
             iconProps={{ icon: 'Close', /* size: 'large' */ }}
@@ -136,18 +135,17 @@ export class SidebarExtension extends React.Component {
   };
 
   render() {
-    if (_.isEmpty(this.state.entities)) {
-      return (
-        <Paragraph className="incoming-links__message">No other entries link to this entry.</Paragraph>
-      );
-    } else {
-      return (
-        <Typography className="entity-sidebar__incoming-links">
-          <Paragraph className="incoming-links__message">There are other entries that links to this entry:</Paragraph>
-          <ReferenceLinkList sdk={this.props.sdk} entries={this.state.entities}/>
-        </Typography>
-      );
-    }
+    const n = _.size(this.state.entities);
+    return (
+      <Typography className="entity-sidebar__incoming-links">
+        <Paragraph className="incoming-links__message">
+          { n === 1 && "There is one other entry that links to this entry:" }
+          { n > 1 && `There are ${ n } other entries that link to this entry:` }
+          { n === 0 && 'No other entries link to this entry.' }
+        </Paragraph>
+        { n !== 0 && <ReferenceLinkList sdk={this.props.sdk} entries={this.state.entities}/> }
+      </Typography>
+    );
   }
 }
 
