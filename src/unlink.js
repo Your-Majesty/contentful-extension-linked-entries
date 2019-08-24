@@ -30,14 +30,24 @@ const omit = (obj, predicate) => {
   });
 };
 
-const getTitle = (fields, locale) => {
-  return _.get(fields, `title[${locale}]`, _.find(fields.title) || 'Untitled')
+const underscore = (...args) => _.values(args).join("_");
+
+const _getDisplayed = async (sdk, contentTypeId) => {
+  const content = await sdk.space.getContentType(contentTypeId);
+  return content.displayField;
+};
+
+const getDisplayed = _.memoize(_getDisplayed, underscore);
+
+const getTitle = (fields, display, locale) => {
+  return _.get(fields, `${display}[${locale}]`, _.find(fields[display]) || 'Untitled')
 };
 
 const printReferences = (sdk, entries) => {
   console.info('There is entries that links to this entry:');
-  _.forEach(entries, e => {
-    console.info(getTitle(e.fields, sdk.locales.default));
+  _.forEach(entries, async e => {
+    const display = await getDisplayed(sdk, e.sys.contentType.sys.id);
+    console.info(getTitle(e.fields, display, sdk.locales.default));
   });
 };
 
