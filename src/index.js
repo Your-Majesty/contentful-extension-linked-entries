@@ -129,7 +129,7 @@ class IncomingLinksSidebar extends React.Component {
     return (
       <div className='entity-sidebar__incoming-links'>
         <IncomingLinksMessage n={n}/>
-        { n!== 0 &&
+        { n !== 0 &&
           <IncomingLinksList
             sdk={this.props.sdk}
             removeIncomingLink={this.removeIncomingLink}
