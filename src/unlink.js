@@ -33,7 +33,7 @@ const omit = (obj, predicate) => {
 const getDisplayed = _.memoize(async (sdk, contentTypeId) => {
   const content = await sdk.space.getContentType(contentTypeId);
   return content.displayField;
-}, (...args) => JSON.stringify(args));
+}, () => 'contentTypeId'); /* contentTypeId is unique in the space */
 
 const selectTitle = (fields, display, locale) => {
   return _.get(fields, `${display}[${locale}]`, _.find(fields[display]) || 'Untitled')
@@ -69,8 +69,6 @@ export const getLinkedEntries = async sdk => {
     'links_to_entry': sdk.entry.getSys().id
   });
 
-  console.log(_.isArray(entries.items));
-  //return _.isArray(entries.items) ? entries.items : [entries.items];
   return entries.items;
 };
 
