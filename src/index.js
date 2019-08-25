@@ -71,7 +71,7 @@ class IncomingLinksList extends React.Component {
   render() {
     return (
       <List className='incoming-links__list'>
-        {this.props.entries.map((entry, index)  =>  (
+        { this.props.entries.map((entry, index)  =>  (
           <IncomingLinksItem
             sdk={this.props.sdk}
             key={entry.id}
@@ -114,23 +114,22 @@ class IncomingLinksSidebar extends React.Component {
   async componentDidMount() {
     this.props.sdk.window.startAutoResizer();
     const entries = await getTrimmedIncomingLinks(this.props.sdk);
-    const nEntries = _.size(entries);
-    this.setState({ entries, nEntries });
+    this.setState({ entries });
   }
 
   removeIncomingLink = async (entry, i) => {
     await unlinkEntry(this.props.sdk, entry.id);
     let entries = this.state.entries.slice();
     entries.splice(i, 1);
-    const nEntries = this.state.nEntries - 1;
-    this.setState({ entries, nEntries });
+    this.setState({ entries });
   };
 
   render() {
+    const n = _.size(this.state.entries);
     return (
       <div className='entity-sidebar__incoming-links'>
-        <IncomingLinksMessage n={this.state.nEntries}/>
-        { this.state.nEntries !== 0 &&
+        <IncomingLinksMessage n={n}/>
+        { n!== 0 &&
           <IncomingLinksList
             sdk={this.props.sdk}
             removeIncomingLink={this.removeIncomingLink}
