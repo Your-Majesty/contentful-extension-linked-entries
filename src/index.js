@@ -38,7 +38,7 @@ class IncomingLinksItem extends React.Component{
     return (
       <ListItem className='incoming-links__item'>
         <a
-          href={getHrefToEntry(this.props.space, this.props.entry.id)}
+          href={getHrefToEntry(this.props.entry.space, this.props.entry.id)}
           className='incoming-links__link'
           target='_blank'
           title={this.props.entry.title}
@@ -120,22 +120,23 @@ class IncomingLinksSidebar extends React.Component {
   async componentDidMount() {
     this.props.sdk.window.startAutoResizer();
     const entries = await getTrimmedIncomingLinks(this.props.sdk);
-    this.setState({ entries });
+    const nEntries = _.size(entries);
+    this.setState({ entries, nEntries });
   }
 
   async removeIncomingLink(entry, i) {
     await unlinkEntry(this.props.sdk, entry.id);
     let entries = this.state.entries.slice();
     entries.splice(i, 1);
-    this.setState({ entries });
+    const nEntries = this.state.nEntries - 1;
+    this.setState({ entries, nEntries });
   }
 
   render() {
-    const n = _.size(this.state.entries);
     return (
       <div className='entity-sidebar__incoming-links'>
-        <IncomingLinksMessage n={n}/>
-        { n !== 0 &&
+        <IncomingLinksMessage n={this.state.nEntries}/>
+        { this.state.nEntries !== 0 &&
           <IncomingLinksList
             sdk={this.props.sdk}
             removeIncomingLink={this.removeIncomingLink}
