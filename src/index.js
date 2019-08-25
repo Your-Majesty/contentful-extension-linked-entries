@@ -4,28 +4,29 @@ import ReactDOM from 'react-dom';
 import '@contentful/forma-36-react-components/dist/styles.css';
 import './index.css';
 import _ from 'lodash'
-import { getIncomingLinks, getTitleLink, removeIncomingLink } from './unlink'
-import { Note, List, ListItem, TextLink, IconButton } from '@contentful/forma-36-react-components';
+import { getIncomingLinks, getTitleLink, unlinkEntry } from './unlink'
+import { Note, List, ListItem, IconButton } from '@contentful/forma-36-react-components';
 import { init, locations } from 'contentful-ui-extensions-sdk';
 
 class IncomingLinksItem extends React.Component{
   static propTypes = {
+    sdk: PropTypes.object.isRequired,
     entry: PropTypes.object.isRequired,
-    i: PropTypes.number.isRequired,
-    removeEntry: PropTypes.func.isRequired
+    index: PropTypes.number.isRequired,
+    removeIncomingLink: PropTypes.func.isRequired
   };
 
   baseUrl = 'https://app.contentful.com';
 
   getHref() {
     return `${this.baseUrl}/spaces/${this.props.entry.space}/entries/${this.props.entry.id}`
-  }
+  };
 
-  removeEntry(entry, i) {
-    this.props.removeEntry(entry, i);
-  }
+  removeIncomingLink(entry, index) {
+    this.props.removeIncomingLink(entry, index);
+  };
 
-  async onButtonClick() {
+  onButtonClick = async () => {
     const options = {
       title: 'Confirmation',
       message: 'Are you sure?',
@@ -35,25 +36,24 @@ class IncomingLinksItem extends React.Component{
     };
 
     if (await this.props.sdk.dialogs.openConfirm(options)) {
-      this.removeEntry(this.props.entry, this.props.i);
+      this.removeIncomingLink(this.props.entry, this.props.index);
     }
   };
 
   render() {
     return (
       <ListItem className='incoming-links__item'>
-        <TextLink
-          linkType='primary'
+        <a
           href={this.getHref()}
           className='incoming-links__link'
           target='_blank'
+          title={this.props.entry.title}
         >
           {this.props.entry.title}
-        </TextLink>
+        </a>
         <IconButton
           buttonType='negative'
           onClick={this.onButtonClick}
-          testId='open-dialog'
           className='btn-close'
           iconProps={{ icon: 'Close' }}
           label='unlink'
@@ -65,28 +65,30 @@ class IncomingLinksItem extends React.Component{
 
 class IncomingLinksList extends React.Component {
   static propTypes = {
+    sdk: PropTypes.object.isRequired,
     entries: PropTypes.array.isRequired,
-    removeEntry: PropTypes.func.isRequired
+    removeIncomingLink: PropTypes.func.isRequired
   };
 
   constructor(props) {
     super(props);
-    this.removeEntry = this.removeEntry.bind(this);
-  }
+    this.removeIncomingLink = this.removeIncomingLink.bind(this);
+  };
 
-  removeEntry(entry, i) {
-    this.props.removeEntry(entry, i);
+  removeIncomingLink = (entry, i) => {
+    this.props.removeIncomingLink(entry, i);
   };
 
   render() {
     return (
       <List className='incoming-links__list'>
-        { this.props.entries.map((item, i)  =>  (
+        { this.props.entries.map((entry, index)  =>  (
           <IncomingLinksItem
-            key={item.id}
-            entry={item}
-            i={i}
-            removeEntry={this.removeEntry}
+            sdk={this.props.sdk}
+            key={entry.id}
+            entry={entry}
+            index={index}
+            removeIncomingLink={this.removeIncomingLink}
           />
         ))}
       </List>
@@ -102,7 +104,7 @@ export class SidebarExtension extends React.Component {
   constructor(props) {
     super(props);
     this.state = { entries: [] };
-    this.removeEntry = this.removeEntry.bind(this);
+    this.removeIncomingLink = this.removeIncomingLink.bind(this);
   }
 
   async componentDidMount() {
@@ -117,8 +119,8 @@ export class SidebarExtension extends React.Component {
     this.setState({ entries });
   }
 
-  async removeEntry(entry, i) {
-    await removeIncomingLink(this.props.sdk, entry.id);
+  async removeIncomingLink(entry, i) {
+    await unlinkEntry(this.props.sdk, entry.id);
     let entries = this.state.entries.slice();
     entries.splice(i, 1);
     this.setState({ entries });
@@ -135,7 +137,8 @@ export class SidebarExtension extends React.Component {
         </p>
         { n !== 0 &&
           <IncomingLinksList
-            removeEntry={this.removeEntry}
+            sdk={this.props.sdk}
+            removeIncomingLink={this.removeIncomingLink}
             entries={this.state.entries}
           />
         }

@@ -22,7 +22,7 @@ const omit = (obj, predicate) => {
   });
 };
 
-const getDisplayed = _.memoize(async (sdk, contentTypeId) => {
+const getDisplayedField = _.memoize(async (sdk, contentTypeId) => {
   const content = await sdk.space.getContentType(contentTypeId);
   return content.displayField;
 }, () => 'contentTypeId'); /* contentTypeId is unique in the space */
@@ -32,11 +32,11 @@ const selectTitle = (fields, display, locale) => {
 };
 
 export const getTitleLink = async (sdk, entity) => {
-  const display = await getDisplayed(sdk, entity.sys.contentType.sys.id);
+  const display = await getDisplayedField(sdk, entity.sys.contentType.sys.id);
   return selectTitle(entity.fields, display, sdk.locales.default);
 };
 
-export const removeIncomingLink = async (sdk, targetId) => {
+export const unlinkEntry = async (sdk, targetId) => {
   const id = sdk.entry.getSys().id;
   const entry = await sdk.space.getEntry(targetId);
   await updateEntry(sdk, omit(entry, e => isEqLink(e, id)));
