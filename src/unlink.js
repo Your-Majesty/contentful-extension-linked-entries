@@ -33,9 +33,7 @@ const selectTitle = (fields, display, locale) => {
 
 export const getTitle = async (sdk, entity) => {
   const display = await getDisplayed(sdk, entity.sys.contentType.sys.id);
-  const x = selectTitle(entity.fields, display, sdk.locales.default);
-  console.log(x);
-  return x;
+  return selectTitle(entity.fields, display, sdk.locales.default);
 };
 
 export const removeReference = async (sdk, targetId) => {

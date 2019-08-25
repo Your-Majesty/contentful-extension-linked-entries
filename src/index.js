@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
-import { List, ListItem, TextLink, Paragraph, Typography, IconButton } from '@contentful/forma-36-react-components';
+import { Note, List, ListItem, TextLink, Paragraph, Typography, IconButton } from '@contentful/forma-36-react-components';
 import { init, locations } from 'contentful-ui-extensions-sdk';
 import '@contentful/forma-36-react-components/dist/styles.css';
 import './index.css';
@@ -47,7 +47,7 @@ export class ReferenceListItem extends React.Component{
         <TextLink
             linkType='primary'
             href={this.getHref()}
-            className='no-underline incoming-links__link'
+            className='incoming-links__link'
             target='_blank'
         >
           {this.props.entry.title}
@@ -118,36 +118,36 @@ export class SidebarExtension extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { entities: [] };
+    this.state = { entries: [] };
     this.removeItem = this.removeItem.bind(this);
   }
 
   async componentDidMount() {
     this.props.sdk.window.startAutoResizer();
-    const entities = await getLinkedEntries(this.props.sdk);
-    this.setState({entities: entities});
+    const entries = await getLinkedEntries(this.props.sdk);
+    this.setState({entries: entries});
   }
 
   removeItem(item, i) {
-    let entities = this.state.entities.slice();
-    entities.splice(i, 1);
-    this.setState({ entities });
+    let entries = this.state.entries.slice();
+    entries.splice(i, 1);
+    this.setState({ entries });
   }
 
   render() {
-    const n = _.size(this.state.entities);
+    const n = _.size(this.state.entries);
     return (
       <Typography className='entity-sidebar__incoming-links'>
-        <Paragraph className='incoming-links__message'>
+        <p className='incoming-links__message'>
           { n === 1 && 'There is one other entry that links to this entry:' }
           { n > 1 && `There are ${ n } other entries that link to this entry:` }
           { n === 0 && 'No other entries link to this entry.' }
-        </Paragraph>
+        </p>
         { n !== 0 &&
           <ReferenceLinkList
             removeItem={this.removeItem}
             sdk={this.props.sdk}
-            entries={this.state.entities}
+            entries={this.state.entries}
           />
         }
       </Typography>
@@ -156,8 +156,11 @@ export class SidebarExtension extends React.Component {
 }
 
 export const initialize = async sdk => {
+  const root = document.getElementById('root');
   if (sdk.location.is(locations.LOCATION_ENTRY_SIDEBAR)) {
-    ReactDOM.render(<SidebarExtension sdk={sdk} />, document.getElementById('root'));
+    ReactDOM.render(<SidebarExtension sdk={sdk} />, root);
+  } else {
+    ReactDOM.render(<Note noteType="negative">Wrong Location</Note>, root)
   }
 };
 
