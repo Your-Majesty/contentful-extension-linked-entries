@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import '@contentful/forma-36-react-components/dist/styles.css';
 import './index.css';
 import _ from 'lodash'
-import { getIncomingLinks, getTitleLink, unlinkEntry } from './unlink'
+import { getTrimmedIncomingLinks, unlinkEntry, getHrefToEntry } from './unlink'
 import { Note, List, ListItem, IconButton } from '@contentful/forma-36-react-components';
 import { init, locations } from 'contentful-ui-extensions-sdk';
 
@@ -14,12 +14,6 @@ class IncomingLinksItem extends React.Component{
     entry: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
     removeIncomingLink: PropTypes.func.isRequired
-  };
-
-  baseUrl = 'https://app.contentful.com';
-
-  getHref() {
-    return `${this.baseUrl}/spaces/${this.props.entry.space}/entries/${this.props.entry.id}`
   };
 
   removeIncomingLink(entry, index) {
@@ -44,7 +38,7 @@ class IncomingLinksItem extends React.Component{
     return (
       <ListItem className='incoming-links__item'>
         <a
-          href={this.getHref()}
+          href={getHrefToEntry(this.props.space, this.props.entry.id)}
           className='incoming-links__link'
           target='_blank'
           title={this.props.entry.title}
@@ -96,7 +90,23 @@ class IncomingLinksList extends React.Component {
   }
 }
 
-export class SidebarExtension extends React.Component {
+class IncomingLinksMessage extends React.Component {
+  static propTypes = {
+    n: PropTypes.number.isRequired
+  };
+
+  render() {
+    return (
+      <p className='incoming-links__message'>
+        { this.props.n === 1 && 'There is one other entry that links to this entry:' }
+        { this.props.n > 1 && `There are ${ this.props.n } other entries that link to this entry:` }
+        { this.props.n === 0 && 'No other entries link to this entry.' }
+      </p>
+    );
+  }
+}
+
+class IncomingLinksSidebar extends React.Component {
   static propTypes = {
     sdk: PropTypes.object.isRequired
   };
@@ -109,13 +119,7 @@ export class SidebarExtension extends React.Component {
 
   async componentDidMount() {
     this.props.sdk.window.startAutoResizer();
-    const entries = await Promise.all(
-      _.map(await getIncomingLinks(this.props.sdk), async e => ({
-        id: e.sys.id,
-        title: await getTitleLink(this.props.sdk, e),
-        space: e.sys.space.sys.id
-      }))
-    );
+    const entries = await getTrimmedIncomingLinks(this.props.sdk);
     this.setState({ entries });
   }
 
@@ -130,11 +134,7 @@ export class SidebarExtension extends React.Component {
     const n = _.size(this.state.entries);
     return (
       <div className='entity-sidebar__incoming-links'>
-        <p className='incoming-links__message'>
-          { n === 1 && 'There is one other entry that links to this entry:' }
-          { n > 1 && `There are ${ n } other entries that link to this entry:` }
-          { n === 0 && 'No other entries link to this entry.' }
-        </p>
+        <IncomingLinksMessage n={n}/>
         { n !== 0 &&
           <IncomingLinksList
             sdk={this.props.sdk}
@@ -150,7 +150,7 @@ export class SidebarExtension extends React.Component {
 export const initialize = async sdk => {
   const root = document.getElementById('root');
   if (sdk.location.is(locations.LOCATION_ENTRY_SIDEBAR)) {
-    ReactDOM.render(<SidebarExtension sdk={sdk} />, root);
+    ReactDOM.render(<IncomingLinksSidebar sdk={sdk} />, root);
   } else {
     ReactDOM.render(<Note noteType="negative">Wrong Location</Note>, root)
   }

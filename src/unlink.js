@@ -27,13 +27,13 @@ const getDisplayedField = _.memoize(async (sdk, contentTypeId) => {
   return content.displayField;
 }, (sdk, contentTypeId) => contentTypeId);
 
-const selectTitle = (fields, display, locale) => {
+const _getTitleLink = (fields, display, locale) => {
   return _.get(fields, `${display}[${locale}]`, _.find(fields[display]) || 'Untitled')
 };
 
 export const getTitleLink = async (sdk, entity) => {
   const display = await getDisplayedField(sdk, entity.sys.contentType.sys.id);
-  return selectTitle(entity.fields, display, sdk.locales.default);
+  return _getTitleLink(entity.fields, display, sdk.locales.default);
 };
 
 export const unlinkEntry = async (sdk, targetId) => {
@@ -48,4 +48,19 @@ export const getIncomingLinks = async sdk => {
   });
 
   return entries.items;
+};
+
+export const getTrimmedIncomingLinks = async sdk => {
+  return await Promise.all(
+    _.map(await getIncomingLinks(sdk), async e => ({
+      id: e.sys.id,
+      title: await getTitleLink(sdk, e),
+      space: e.sys.space.sys.id
+    }))
+  )
+};
+
+export const getHrefToEntry = (spaceId, entryId) => {
+  const baseUrl = 'https://app.contentful.com';
+  return `${baseUrl}/spaces/${spaceId}/entries/${entryId}`
 };
