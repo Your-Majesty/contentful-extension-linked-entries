@@ -52,7 +52,7 @@ export class ReferenceListItem extends React.Component{
 
   onButtonClick = async () => {
     const options = {
-      title: 'Confirmation of unlinking',
+      title: 'Confirmation',
       message: 'Are you sure?',
       intent: "negative",
       confirmLabel: "Yes",
@@ -91,7 +91,8 @@ export class ReferenceListItem extends React.Component{
 export class ReferenceLinkList extends React.Component {
   static propTypes = {
     entries: PropTypes.array.isRequired,
-    sdk: PropTypes.object.isRequired
+    sdk: PropTypes.object.isRequired,
+    removeItem: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -113,6 +114,7 @@ export class ReferenceLinkList extends React.Component {
     let entries = this.state.entries.slice();
     entries.splice(i, 1);
     this.setState({ entries });
+    this.props.removeItem(item, i);
   };
 
   render() {
@@ -140,6 +142,7 @@ export class SidebarExtension extends React.Component {
   constructor(props) {
     super(props);
     this.state = { entities: [] };
+    this.removeItem = this.removeItem.bind(this);
   }
 
   async componentDidMount() {
@@ -148,17 +151,14 @@ export class SidebarExtension extends React.Component {
     this.setState({entities: entities});
   }
 
-  onButtonClick = async () => {
-    const result = await this.props.sdk.dialogs.openExtension({
-      width: 800,
-      title: 'The same extension rendered in modal window'
-    });
-    console.log(result);
-  };
+  removeItem(item, i) {
+    let entities = this.state.entities.slice();
+    entities.splice(i, 1);
+    this.setState({ entities });
+  }
 
   render() {
     const n = _.size(this.state.entities);
-    /* TODO move n to state and change it */
     return (
       <Typography className="entity-sidebar__incoming-links">
         <Paragraph className="incoming-links__message">
@@ -166,7 +166,13 @@ export class SidebarExtension extends React.Component {
           { n > 1 && `There are ${ n } other entries that link to this entry:` }
           { n === 0 && 'No other entries link to this entry.' }
         </Paragraph>
-        { n !== 0 && <ReferenceLinkList sdk={this.props.sdk} entries={this.state.entities}/> }
+        { n !== 0 &&
+        <ReferenceLinkList
+            removeItem={this.removeItem}
+            sdk={this.props.sdk}
+            entries={this.state.entities}
+        />
+        }
       </Typography>
     );
   }
