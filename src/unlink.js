@@ -31,18 +31,18 @@ const selectTitle = (fields, display, locale) => {
   return _.get(fields, `${display}[${locale}]`, _.find(fields[display]) || 'Untitled')
 };
 
-export const getTitle = async (sdk, entity) => {
+export const getTitleLink = async (sdk, entity) => {
   const display = await getDisplayed(sdk, entity.sys.contentType.sys.id);
   return selectTitle(entity.fields, display, sdk.locales.default);
 };
 
-export const removeReference = async (sdk, targetId) => {
+export const removeIncomingLink = async (sdk, targetId) => {
   const id = sdk.entry.getSys().id;
   const entry = await sdk.space.getEntry(targetId);
   await updateEntry(sdk, omit(entry, e => isEqLink(e, id)));
 };
 
-export const getLinkedEntries = async sdk => {
+export const getIncomingLinks = async sdk => {
   const entries = await sdk.space.getEntries({
     'links_to_entry': sdk.entry.getSys().id
   });
