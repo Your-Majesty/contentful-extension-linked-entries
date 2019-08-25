@@ -25,7 +25,7 @@ const omit = (obj, predicate) => {
 const getDisplayedField = _.memoize(async (sdk, contentTypeId) => {
   const content = await sdk.space.getContentType(contentTypeId);
   return content.displayField;
-}, () => 'contentTypeId'); /* contentTypeId is unique in the space */
+}, (sdk, contentTypeId) => contentTypeId);
 
 const selectTitle = (fields, display, locale) => {
   return _.get(fields, `${display}[${locale}]`, _.find(fields[display]) || 'Untitled')
