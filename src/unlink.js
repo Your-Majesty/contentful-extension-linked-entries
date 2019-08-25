@@ -8,17 +8,22 @@ const isEqLink = (field, id) =>
   field.sys.id === id;
 
 const updateEntry = async (sdk, entry) => {
-  try { await sdk.space.updateEntry(entry) }
-  catch (err) { console.error(err); }
+  try {
+    await sdk.space.updateEntry(entry)
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 const omit = (obj, predicate) => {
   return _.transform(obj, (result, value, key) => {
-    if (_.isObject(value))
+    if (_.isObject(value)) {
       value = omit(value, predicate);
+    }
 
-    if (!predicate(value, key))
+    if (!predicate(value, key)) {
       _.isArray(obj) ? result.push(value) : result[key] = value;
+    }
   });
 };
 

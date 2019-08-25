@@ -64,11 +64,6 @@ class IncomingLinksList extends React.Component {
     removeIncomingLink: PropTypes.func.isRequired
   };
 
-  constructor(props) {
-    super(props);
-    this.removeIncomingLink = this.removeIncomingLink.bind(this);
-  };
-
   removeIncomingLink = (entry, i) => {
     this.props.removeIncomingLink(entry, i);
   };
@@ -76,7 +71,7 @@ class IncomingLinksList extends React.Component {
   render() {
     return (
       <List className='incoming-links__list'>
-        { this.props.entries.map((entry, index)  =>  (
+        {this.props.entries.map((entry, index)  =>  (
           <IncomingLinksItem
             sdk={this.props.sdk}
             key={entry.id}
@@ -114,7 +109,6 @@ class IncomingLinksSidebar extends React.Component {
   constructor(props) {
     super(props);
     this.state = { entries: [] };
-    this.removeIncomingLink = this.removeIncomingLink.bind(this);
   }
 
   async componentDidMount() {
@@ -124,13 +118,13 @@ class IncomingLinksSidebar extends React.Component {
     this.setState({ entries, nEntries });
   }
 
-  async removeIncomingLink(entry, i) {
+  removeIncomingLink = async (entry, i) => {
     await unlinkEntry(this.props.sdk, entry.id);
     let entries = this.state.entries.slice();
     entries.splice(i, 1);
     const nEntries = this.state.nEntries - 1;
     this.setState({ entries, nEntries });
-  }
+  };
 
   render() {
     return (
