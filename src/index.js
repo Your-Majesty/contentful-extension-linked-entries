@@ -1,35 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
-import { Button, List, ListItem, TextLink, Paragraph, Typography, IconButton } from '@contentful/forma-36-react-components';
+import { List, ListItem, TextLink, Paragraph, Typography, IconButton } from '@contentful/forma-36-react-components';
 import { init, locations } from 'contentful-ui-extensions-sdk';
-import tokens from '@contentful/forma-36-tokens';
 import '@contentful/forma-36-react-components/dist/styles.css';
 import './index.css';
-import { unlink, getLinkedEntries, getTitle, printE } from './unlink.js'
+import { getLinkedEntries, getTitle, removeReference } from './unlink'
 import _ from 'lodash'
-
-export class DialogExtension extends React.Component {
-  static propTypes = {
-    sdk: PropTypes.object.isRequired
-  };
-
-  render() {
-    return (
-      <div style={{ margin: tokens.spacingM }}>
-        <Button
-          testId="close-dialog"
-          buttonType="muted"
-          onClick={() => {
-            this.props.sdk.close('data from modal dialog');
-          }}
-        >
-          Close modal
-        </Button>
-      </div>
-    );
-  }
-}
 
 export class ReferenceListItem extends React.Component{
   static propTypes = {
@@ -39,7 +16,6 @@ export class ReferenceListItem extends React.Component{
     removeItem: PropTypes.func.isRequired
   };
 
-  /* TODO better way to extract base url */
   baseUrl = 'https://app.contentful.com';
 
   getHref() {
@@ -54,34 +30,35 @@ export class ReferenceListItem extends React.Component{
     const options = {
       title: 'Confirmation',
       message: 'Are you sure?',
-      intent: "negative",
-      confirmLabel: "Yes",
-      cancelLabel: "No"
+      intent: 'negative',
+      confirmLabel: 'Yes',
+      cancelLabel: 'No'
     };
 
     if (await this.props.sdk.dialogs.openConfirm(options)) {
+      await removeReference(this.props.sdk, this.props.entry.id);
       this.removeItem(this.props.entry, this.props.i);
     }
   };
 
   render() {
     return (
-      <ListItem className="incoming-links__item">
+      <ListItem className='incoming-links__item'>
         <TextLink
-            linkType="primary"
+            linkType='primary'
             href={this.getHref()}
-            className="no-underline incoming-links__link"
-            target="_blank"
+            className='no-underline incoming-links__link'
+            target='_blank'
         >
           {this.props.entry.title}
         </TextLink>
         <IconButton
-            buttonType="negative"
+            buttonType='negative'
             onClick={this.onButtonClick}
-            testId="open-dialog"
-            className="btn-close"
+            testId='open-dialog'
+            className='btn-close'
             iconProps={{ icon: 'Close' }}
-            label="unlink"
+            label='unlink'
         />
       </ListItem>
     )
@@ -119,7 +96,7 @@ export class ReferenceLinkList extends React.Component {
 
   render() {
     return (
-      <List className="incoming-links__list">
+      <List className='incoming-links__list'>
         {this.state.entries.map((item, i)  =>  (
            <ReferenceListItem
                key={item.id}
@@ -160,9 +137,9 @@ export class SidebarExtension extends React.Component {
   render() {
     const n = _.size(this.state.entities);
     return (
-      <Typography className="entity-sidebar__incoming-links">
-        <Paragraph className="incoming-links__message">
-          { n === 1 && "There is one other entry that links to this entry:" }
+      <Typography className='entity-sidebar__incoming-links'>
+        <Paragraph className='incoming-links__message'>
+          { n === 1 && 'There is one other entry that links to this entry:' }
           { n > 1 && `There are ${ n } other entries that link to this entry:` }
           { n === 0 && 'No other entries link to this entry.' }
         </Paragraph>
@@ -179,12 +156,9 @@ export class SidebarExtension extends React.Component {
 }
 
 export const initialize = async sdk => {
-  if (sdk.location.is(locations.LOCATION_DIALOG)) {
-    ReactDOM.render(<DialogExtension sdk={sdk} />, document.getElementById('root'));
-  } else if (sdk.location.is(locations.LOCATION_ENTRY_SIDEBAR)) {
+  if (sdk.location.is(locations.LOCATION_ENTRY_SIDEBAR)) {
     ReactDOM.render(<SidebarExtension sdk={sdk} />, document.getElementById('root'));
   }
-  await unlink(sdk);
 };
 
 init(initialize);
