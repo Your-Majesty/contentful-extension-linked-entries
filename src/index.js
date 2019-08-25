@@ -167,11 +167,11 @@ export class SidebarExtension extends React.Component {
           { n === 0 && 'No other entries link to this entry.' }
         </Paragraph>
         { n !== 0 &&
-        <ReferenceLinkList
+          <ReferenceLinkList
             removeItem={this.removeItem}
             sdk={this.props.sdk}
             entries={this.state.entities}
-        />
+          />
         }
       </Typography>
     );
