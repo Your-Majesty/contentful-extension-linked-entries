@@ -1,17 +1,17 @@
-# Contentful Extension Unlink References
+# Contentful Extension Linked Entries
 
 ## Usage
 `Settings` -> `Extensions` -> `Add extension`
 
 Select `Yes, this is a sidebar extension` and Hosting `Self-hosted (src)`, then paste 
 ```
-https://high5digital.github.io/contentful-extension-links/build/
+https://your-majesty.github.io/contentful-extension-linked-entries/build/
 ```
 to `Self-hosted URL`
 
 ## Development
 ```bash
-cd contentful-extension-unlinks
+cd contentful-extension-linked-entries
 # install dependencies
 npm install
 # login to contentful

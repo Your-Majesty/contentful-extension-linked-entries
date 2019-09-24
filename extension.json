@@ -1,6 +1,6 @@
 {
-  "id": "contentful-extension-unlinks",
-  "name": "Unlinks",
+  "id": "contentful-extension-linked-entries",
+  "name": "Linked Entries",
   "srcdoc": "./build/index.html",
   "sidebar": true
 }
